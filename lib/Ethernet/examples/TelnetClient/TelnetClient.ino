@@ -29,7 +29,7 @@ byte mac[] = {
 IPAddress ip(192, 168, 1, 177);
 
 // Enter the IP address of the server you're connecting to:
-IPAddress server(192, 168, 2, 9);
+IPAddress server(1, 1, 1, 1);
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server
@@ -52,7 +52,7 @@ void setup() {
   Serial.println("connecting...");
 
   // if you get a connection, report back via serial:
-  if (client.connect(server, 8080)) {
+  if (client.connect(server, 10002)) {
     Serial.println("connected");
   } else {
     // if you didn't get a connection to the server:
@@ -86,3 +86,7 @@ void loop() {
     while (true);
   }
 }
+
+
+
+

@@ -1,24 +1,25 @@
 #ifndef BIER_DS18B20_H
 #define BIER_DS18B20_H
 
+
 #define TIME_SENSOR_WAIT 750
 
-OneWire ds(10);
+OneWire ds(9);
 
-unsigned long TIME_SENSOR_LAST_TRIGGERED = 0;
-unsigned long TIME_SENSOR_LAST_READ = 0;
-float LAST_TEMPERATURE = -1000.0;
-unsigned long SENSOR_NOW;
-bool SENSOR_VALUE_AVAIL = false;
+unsigned long TEMP_TIME_SENSOR_LAST_TRIGGERED = 0;
+unsigned long TEMP_TIME_SENSOR_LAST_READ = 0;
+float TEMP_LAST_TEMPERATURE = -1000.0;
+unsigned long TEMP_SENSOR_NOW;
+bool TEMP_SENSOR_VALUE_AVAIL = false;
 unsigned char i;
 
 float getTemperature() {
-    SENSOR_NOW = millis();
-    if((SENSOR_NOW - TIME_SENSOR_LAST_TRIGGERED) > TIME_SENSOR_WAIT) {
-        if(TIME_SENSOR_LAST_TRIGGERED != 0) {
-            SENSOR_VALUE_AVAIL = true;
+    TEMP_SENSOR_NOW = millis();
+    if((TEMP_SENSOR_NOW - TEMP_TIME_SENSOR_LAST_TRIGGERED) > TIME_SENSOR_WAIT) {
+        if(TEMP_TIME_SENSOR_LAST_TRIGGERED != 0) {
+            TEMP_SENSOR_VALUE_AVAIL = true;
         }
-        TIME_SENSOR_LAST_TRIGGERED = SENSOR_NOW;
+        TEMP_TIME_SENSOR_LAST_TRIGGERED = TEMP_SENSOR_NOW;
 
         byte addr[8];
 
@@ -30,9 +31,9 @@ float getTemperature() {
         ds.write(0x44, 1);
     }
 
-    SENSOR_NOW = millis();
-    if((SENSOR_NOW - TIME_SENSOR_LAST_READ) > TIME_SENSOR_WAIT && SENSOR_VALUE_AVAIL) {
-        TIME_SENSOR_LAST_READ = SENSOR_NOW;
+    TEMP_SENSOR_NOW = millis();
+    if((TEMP_SENSOR_NOW - TEMP_TIME_SENSOR_LAST_READ) > TIME_SENSOR_WAIT && TEMP_SENSOR_VALUE_AVAIL) {
+        TEMP_TIME_SENSOR_LAST_READ = TEMP_SENSOR_NOW;
 
         byte addr[8];
         byte present = 0;
@@ -55,10 +56,10 @@ float getTemperature() {
         else if (cfg == 0x20) raw = raw & ~3; //10 bit Auflösung, 187,5ms
         else if (cfg == 0x40) raw = raw & ~1; //11 bit Auflösung, 375ms
 
-        LAST_TEMPERATURE = (float)raw / 16.0;
+        TEMP_LAST_TEMPERATURE = (float)raw / 16.0;
     }
 
-    return LAST_TEMPERATURE;
+    return TEMP_LAST_TEMPERATURE;
 }
 
 #endif
