@@ -10,7 +10,6 @@
 unsigned long now;
 double istTemperatur;
 
-double asd = 0.1257765;
 unsigned long TIME_SERIAL_LAST_SENT = 0;
 
 // Eth vars
@@ -46,7 +45,6 @@ void setup() {
     connectClient(server, port);
 }
 
-// übersetzt die IP Adresse in einen String, für die debug ausgabe auf dem serial port
 String ip2string(IPAddress address) {
     byte a = address[0];
     byte b = address[1];
@@ -62,7 +60,14 @@ void printSerial() {
     if ((now - TIME_SERIAL_LAST_SENT) > TIME_SERIAL) {
         TIME_SERIAL_LAST_SENT = now;
         Serial.println(istTemperatur);
-        client.print(String(istTemperatur,4));
+        if (!client.connected()){
+            Serial.println("Trying on " + ip2string(server) + " and port "+  String(port));
+            Serial.println("client not connected");
+            connectClient(server, port);
+        }
+        if (client.connected()){
+            client.print(String(istTemperatur,3));
+        }
     }
 }
 
@@ -74,11 +79,5 @@ void loop() {
     }
 
     printSerial();
-    if (!client.connected()){
-        Serial.println("Trying on " + ip2string(server) + " and port "+  String(port));
-        Serial.println("client not connected");
-        connectClient(server, port);
-    }
-    now = millis();
 }
 
