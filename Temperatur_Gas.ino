@@ -24,7 +24,7 @@ IPAddress server(192, 168, 2, 9);
 // Ethernet client
 EthernetClient client;
 // server port to connect to
-int port = 8081;
+int port = 10001;
 
 
 void connectClient(IPAddress address, int port) {
@@ -46,6 +46,15 @@ void setup() {
     connectClient(server, port);
 }
 
+// übersetzt die IP Adresse in einen String, für die debug ausgabe auf dem serial port
+String ip2string(IPAddress address) {
+    byte a = address[0];
+    byte b = address[1];
+    byte c = address[2];
+    byte d = address[3];
+    return String(a)+"."+String(b)+"."+String(c)+"."+String(d);
+}
+
 // fuer protokoll auf laptop...
 // strings ueber serial
 void printSerial() {
@@ -53,35 +62,8 @@ void printSerial() {
     if ((now - TIME_SERIAL_LAST_SENT) > TIME_SERIAL) {
         TIME_SERIAL_LAST_SENT = now;
         Serial.println(istTemperatur);
+        client.print(String(istTemperatur,4));
     }
-}
-
-void ethLoop(float temp) {
-    // if there are incoming bytes available
-    // from the server, read them and print them:
-
-    client.print(String(temp,4));
-
-    // as long as there are bytes in the serial queue,
-    // read them and send them out the socket if it's open:
-//    while (Serial.available() > 0) {
-//        char inChar = Serial.read();
-//        if (client.connected()) {
-//            client.print("hes");
-//        }
-//    }
-
-    // if the server's disconnected, stop the client:
-    if (!client.connected()) {
-        Serial.println();
-        Serial.println("reconnecting.");
-        client.stop();
-        delay(1000);
-        connectClient(server, port);
-        // do nothing:
-//        while (true);
-    }
-
 }
 
 void loop() {
@@ -93,13 +75,10 @@ void loop() {
 
     printSerial();
     if (!client.connected()){
+        Serial.println("Trying on " + ip2string(server) + " and port "+  String(port));
         Serial.println("client not connected");
         connectClient(server, port);
     }
     now = millis();
-    if ((now - TIME_SERIAL_LAST_SENT) > TIME_SERIAL) {
-        TIME_SERIAL_LAST_SENT = now;
-        ethLoop(istTemperatur);
-    }
 }
 
