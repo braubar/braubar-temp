@@ -26,14 +26,14 @@ EthernetClient client;
 int port = 10001;
 
 
-void connectClient(IPAddress address, int port) {
-    if (client.connect(address, port)) {
-        Serial.println("connected");
-    } else {
-        // if you didn't get a connection to the server:
-        Serial.println("connection failed");
-    }
-}
+String ip2string(IPAddress address) ;
+
+
+// fuer protokoll auf laptop...
+// strings ueber serial
+void printSerial() ;
+
+void connectClient(IPAddress address, int port) ;
 
 void setup() {
     Serial.begin(9600);
@@ -43,6 +43,27 @@ void setup() {
     // give the Ethernet shield a second to initialize:
     delay(1000);
     connectClient(server, port);
+}
+
+
+
+void loop() {
+    istTemperatur = getTemperature();
+    if (istTemperatur == -1000.0) { // initialisierungswert des temp sensors, soll vermutlich ein break darstellen.
+        delay(10);
+        return;
+    }
+
+    printSerial();
+}
+
+void connectClient(IPAddress address, int port) {
+    if (client.connect(address, port)) {
+        Serial.println("connected");
+    } else {
+        // if you didn't get a connection to the server:
+        Serial.println("connection failed");
+    }
 }
 
 String ip2string(IPAddress address) {
@@ -70,14 +91,3 @@ void printSerial() {
         }
     }
 }
-
-void loop() {
-    istTemperatur = getTemperature();
-    if (istTemperatur == -1000.0) { // initialisierungswert des temp sensors, soll vermutlich ein break darstellen.
-        delay(10);
-        return;
-    }
-
-    printSerial();
-}
-
