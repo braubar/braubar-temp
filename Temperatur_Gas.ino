@@ -15,7 +15,7 @@ unsigned long TIME_SERIAL_LAST_SENT = 0;
 // Eth vars
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 // IP address arduino
-IPAddress ip(192,168,2, 178);
+IPAddress ip(192,168,2, 110);
 
 // IP address server
 IPAddress server(192, 168, 2, 9);
