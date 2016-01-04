@@ -2,6 +2,7 @@
 #include <TimerOne.h>
 #include <SPI.h>
 #include <Ethernet.h>
+#include <EthernetUdp.h>
 
 #include "config.h"
 #include "ds18b20.h"
@@ -11,6 +12,7 @@ unsigned long now;
 double istTemperatur;
 
 unsigned long TIME_SERIAL_LAST_SENT = 0;
+const uint8_t SENSOR_ID = 1;
 
 // Eth vars
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
@@ -18,13 +20,12 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 IPAddress ip(192,168,2, 178);
 
 // IP address server
-IPAddress server(192, 168, 2, 9);
+IPAddress server(255,255,255,255);
 
-// Ethernet client
-EthernetClient client;
+// An EthernetUDP instance to let us send and receive packets over UDP
+EthernetUDP Udp;
 // server port to connect to
-int port = 10001;
-
+unsigned int remotePort = 50505;
 
 String ip2string(IPAddress address) ;
 
@@ -33,19 +34,20 @@ String ip2string(IPAddress address) ;
 // strings ueber serial
 void printSerial() ;
 
-void connectClient(IPAddress address, int port) ;
-
 void setup() {
     Serial.begin(9600);
     // start the Ethernet connection:
-    Ethernet.begin(mac, ip);
+    if(Ethernet.begin(mac)==1) {
+        Serial.println(Ethernet.localIP());
+    } else {
+        Serial.println("No DHCP Address :(");
+    }
     // Open serial communications and wait for port to open:
     // give the Ethernet shield a second to initialize:
     delay(1000);
-    connectClient(server, port);
+    Udp.begin(remotePort);
+
 }
-
-
 
 void loop() {
     istTemperatur = getTemperature();
@@ -55,15 +57,9 @@ void loop() {
     }
 
     printSerial();
-}
 
-void connectClient(IPAddress address, int port) {
-    if (client.connect(address, port)) {
-        Serial.println("connected");
-    } else {
-        // if you didn't get a connection to the server:
-        Serial.println("connection failed");
-    }
+    // renews the DHCP lease.
+    Ethernet.maintain();
 }
 
 String ip2string(IPAddress address) {
@@ -80,14 +76,27 @@ void printSerial() {
     now = millis();
     if ((now - TIME_SERIAL_LAST_SENT) > TIME_SERIAL) {
         TIME_SERIAL_LAST_SENT = now;
-        Serial.println(istTemperatur);
-        if (!client.connected()){
-            Serial.println("Trying on " + ip2string(server) + " and port "+  String(port));
-            Serial.println("client not connected");
-            connectClient(server, port);
-        }
-        if (client.connected()){
-            client.print(String(istTemperatur,3));
-        }
+        Serial.println(istTemperatur);// strings ueber serial
+
+        Udp.beginPacket(server, remotePort);
+
+        // protokoll ueberlegen mit syncbyte und check
+        char buff[11];
+        buff[0] = 0xF;
+        buff[1] = 0x0;
+        buff[2] = 0xF;
+        buff[3] = 0xF;
+        buff[4] = uint16_t(istTemperatur * 100) & 0x00FF;
+        buff[5] = (uint16_t(istTemperatur * 100) >> 8) & 0x00FF;
+        // heating
+        uint8_t(heating);
+        buff[6] = SENSOR_ID;
+        buff[7] = 0xF;
+        buff[8] = 0x0;
+        buff[9] = 0xF;
+        buff[10] = 0xF;
+        Serial.println(buff);
+        Udp.write(buff, 11);
+        Udp.endPacket();
     }
 }
