@@ -13,6 +13,6 @@ set(SOURCE_FILES
     config.h
     ds18b20.h
     Makefile
-    Temperatur_Gas.ino)
+        braubar_temp.ino)
 
 add_executable(braubar_temp ${SOURCE_FILES})
