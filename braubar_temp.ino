@@ -2,6 +2,7 @@
 #include <TimerOne.h>
 #include <SPI.h>
 #include <Ethernet2.h>
+#include <EthernetUdp2.h>
 
 #include "config.h"
 #include "ds18b20.h"
@@ -14,10 +15,9 @@ unsigned long TIME_SERIAL_LAST_SENT = 0;
 const uint8_t SENSOR_ID = 1;
 
 // Eth vars
+// mac is printed under eth2 shield
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x10, 0x23, 0x12 };
-//byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 // IP address arduino
-IPAddress ip(192,168,2, 111);
 
 // IP address server
 IPAddress server(255,255,255,255);
