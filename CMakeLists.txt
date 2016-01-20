@@ -8,7 +8,9 @@ set(SOURCE_FILES
     lib/OneWire/OneWire.h
     lib/TimerOne/TimerOne.cpp
     lib/TimerOne/TimerOne.h
-    lib/Ethernet/src/Ethernet.h
+    lib/Ethernet2/src/Ethernet2.h
+    lib/Ethernet2/src/EthernetUdp2.h
+    lib/Ethernet2/src/EthernetUdp2.cpp
     CMakeLists.txt
     config.h
     ds18b20.h
