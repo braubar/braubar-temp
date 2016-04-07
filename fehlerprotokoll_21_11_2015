@@ -1,8 +1,0 @@
-7:30
-- sprung in die nächste phase bei 44.69° (5min auf 45 halten)
-- beim ablauf der phasenzeit gab es einen "zufälligen" reset
-- wiederholt sprung auf nächste stufe aufgetreten 50 auf 64° -> arduino lief fdie ganze nacht ohne probleme, allerdings ohne temp veränderung.
-- beim neu starten der seriellen verbindung startet das arduino programm neu. -> feedback über protokoll, damit klar ist welche stufe angefahren wurde
-- heizt trotz erreichter temperatur
-
--
